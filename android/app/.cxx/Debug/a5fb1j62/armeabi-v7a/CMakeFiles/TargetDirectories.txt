@@ -1,0 +1,2 @@
+C:/projetos/Flutter/MyApp/Imersao-Alura-Mobile/android/app/.cxx/Debug/a5fb1j62/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/projetos/Flutter/MyApp/Imersao-Alura-Mobile/android/app/.cxx/Debug/a5fb1j62/armeabi-v7a/CMakeFiles/rebuild_cache.dir
