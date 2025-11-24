@@ -1,12 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+class UserDTO {
+  final String name;
+  final String email;
+  final String passwordHash;
+  final String role;
 
-class UserProvider extends ChangeNotifier {
-  User? _user;
-  User? get user => _user;
+  UserDTO({
+    required this.name,
+    required this.email,
+    required this.passwordHash,
+    required this.role,
+  });
 
-  void setUser(User? u) {
-    _user = u;
-    notifyListeners();
+  factory UserDTO.fromJson(Map<String, dynamic> json) {
+    return UserDTO(
+      name: json['name'],
+      email: json['email'],
+      passwordHash: json['passwordHash'],
+      role: json['role'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'passwordHash': passwordHash,
+      'role': role,
+    };
   }
 }
