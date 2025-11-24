@@ -3,6 +3,7 @@ import 'package:myapp/ui/_core/app_colors.dart';
 
 abstract class AppTheme {
   static ThemeData appTheme = ThemeData.dark().copyWith(
+    useMaterial3: true,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: WidgetStatePropertyAll(Colors.black),

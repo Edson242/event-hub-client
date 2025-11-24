@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/ui/_core/app_colors.dart';
-import 'package:myapp/ui/checkout/checkout_screen.dart';
 import 'package:myapp/ui/home/home_screen.dart';
 import 'package:myapp/ui/userPage/user_page_screen.dart';
 
@@ -38,15 +37,7 @@ class _BottomMenuState extends State<BottomMenu> {
           ),
         );
         break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const CheckoutScreen(),
-          ),
-        );
-        break;
-      case 3:
+      case 1:
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -68,9 +59,7 @@ class _BottomMenuState extends State<BottomMenu> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             buildIcon(Icons.home, 0),
-            buildIcon(Icons.search, 1),
-            buildIcon(Icons.shopping_basket, 2),
-            buildIcon(Icons.person, 3),
+            buildIcon(Icons.person, 1),
           ],
         ),
       ),
