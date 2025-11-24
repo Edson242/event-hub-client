@@ -1,35 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/data/restaurant_data.dart';
-import 'package:myapp/ui/_core/bag_provider.dart';
+import 'package:myapp/services/secure_storage_service.dart';
 import 'package:myapp/ui/home/home_screen.dart';
-import 'package:myapp/ui/login/login_screen.dart';
 import 'package:myapp/ui/_core/app_theme.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // será gerado automaticamente
+import 'package:myapp/ui/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  RestaurantData restaurantData = RestaurantData();
-  await restaurantData.getRestaurants();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
-    MultiProvider(
-      providers: [
-        StreamProvider<User?>.value(
-          value: FirebaseAuth.instance.userChanges(),
-          initialData: null,
-        ),
-        ChangeNotifierProvider(
-          create: (context) {
-            return restaurantData;
-          },
-        ),
-        ChangeNotifierProvider(create: (context) => BagProvider()),
-      ],
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 
@@ -51,14 +29,17 @@ class RouterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.userChanges(),
+    return FutureBuilder<String?>(
+      future: SecureStorageService().getToken(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SplashScreen(); // Ou um loading indicator
+        }
+        
+        if (snapshot.hasData && snapshot.data != null) {
           return HomeScreen();
         } else {
-          return LoginScreen();
+          return SplashScreen();
         }
       },
     );
