@@ -18,6 +18,9 @@ dependencies:
   dio: ^5.4.3+1                # Para requisições de API
   flutter_secure_storage: ^9.2.2  # Para salvar o token
   getwidget: ^3.1.1
+  geolocator: ^10.0.0
+  geocoding: ^2.0.5
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +37,23 @@ flutter:
     - assets/banners/
     - assets/others/
     - assets/icons/
+    - assets/fonts/
+
+  fonts:
+    - family: AirbnbCereal
+      fonts:
+        - asset: assets/fonts/AirbnbCereal_W_Lt.otf
+          weight: 300
+        - asset: assets/fonts/AirbnbCereal_W_Bk.otf
+          weight: 400
+        - asset: assets/fonts/AirbnbCereal_W_Md.otf
+          weight: 500
+        - asset: assets/fonts/AirbnbCereal_W_Bd.otf
+          weight: 700
+        - asset: assets/fonts/AirbnbCereal_W_XBd.otf
+          weight: 800
+        - asset: assets/fonts/AirbnbCereal_W_Blk.otf
+          weight: 900
 
 # CORREÇÃO APLICADA AQUI:
 # Esta seção está agora no nível raiz do arquivo, sem indentação.
