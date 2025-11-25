@@ -1,31 +1,41 @@
-class UserDTO {
+import 'dart:convert';
+
+class User {
+  final int id;
   final String name;
   final String email;
-  final String passwordHash;
   final String role;
+  final String? passwordHash; // Make nullable
 
-  UserDTO({
+  User({
+    required this.id,
     required this.name,
     required this.email,
-    required this.passwordHash,
     required this.role,
+    this.passwordHash,
   });
 
-  factory UserDTO.fromJson(Map<String, dynamic> json) {
-    return UserDTO(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
       name: json['name'],
       email: json['email'],
-      passwordHash: json['passwordHash'],
       role: json['role'],
+      passwordHash: json['passwordHash'], // Will be null if not present
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'email': email,
-      'passwordHash': passwordHash,
       'role': role,
+      'passwordHash': passwordHash,
     };
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory User.fromJsonString(String source) => User.fromJson(json.decode(source));
 }

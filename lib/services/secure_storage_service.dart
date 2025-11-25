@@ -37,4 +37,33 @@ class SecureStorageService {
       print("Erro ao deletar token: $e");
     }
   }
+
+  // --- Métodos para dados do usuário ---
+
+  static const _keyUserData = 'user_data';
+
+  Future<void> saveUser(String userJson) async {
+    try {
+      await _storage.write(key: _keyUserData, value: userJson);
+    } catch (e) {
+      print("Erro ao salvar dados do usuário: $e");
+    }
+  }
+
+  Future<String?> getUserJson() async {
+    try {
+      return await _storage.read(key: _keyUserData);
+    } catch (e) {
+      print("Erro ao ler dados do usuário: $e");
+      return null;
+    }
+  }
+
+  Future<void> deleteUser() async {
+    try {
+      await _storage.delete(key: _keyUserData);
+    } catch (e) {
+      print("Erro ao deletar dados do usuário: $e");
+    }
+  }
 }

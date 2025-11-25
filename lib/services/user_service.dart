@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:myapp/dto/role.dto.dart';
+import 'package:myapp/dto/user.dto.dart';
 import 'package:myapp/model/user.dart';
 import 'package:myapp/services/api_service.dart';
 import 'package:myapp/services/secure_storage_service.dart';
@@ -8,7 +9,7 @@ class UserService {
   final Dio _dio = ApiService().dio;
   final SecureStorageService _storageService = SecureStorageService();
 
-  final String _endpoint = '/users'; 
+  final String _endpoint = '/users';
 
   Future<String?> registerUser({
     required String name,
@@ -28,7 +29,6 @@ class UserService {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        
         final String? token = response.data['token'];
 
         if (token != null && token.isNotEmpty) {
@@ -38,12 +38,11 @@ class UserService {
         } else {
           // print("Usuário cadastrado. Faça o login.");
         }
-        
+
         return null;
       } else {
         return "Erro inesperado do servidor.";
       }
-
     } on DioException catch (e) {
       if (e.response != null) {
         if (e.response?.statusCode == 409) {
@@ -59,19 +58,34 @@ class UserService {
     }
   }
 
-  Future<UserDTO> getCurrentUser() async {
+  Future<UserDTO?> getCurrentUser() async {
     try {
+      final userJson = await _storageService.getUserJson();
+      if (userJson != null) {
+        print("[USER_SERVICE_DEBUG] User found in local storage.");
+        final user = User.fromJsonString(userJson);
+        return UserDTO.fromUser(user);
+      }
+
+      print("[USER_SERVICE_DEBUG] User not in storage, fetching from API '/users/me'...");
       final response = await _dio.get('$_endpoint/me');
+      print("[USER_SERVICE_DEBUG] API response status: ${response.statusCode}");
 
       if (response.statusCode == 200) {
-        return UserDTO.fromJson(response.data);
+        final user = User.fromJson(response.data);
+        await _storageService.saveUser(user.toJson());
+        print("[USER_SERVICE_DEBUG] User fetched from API and saved to storage.");
+        return UserDTO.fromUser(user);
       } else {
-        throw Exception("Erro ao buscar dados do usuário.");
+        print("[USER_SERVICE_DEBUG] Error fetching user data from API, status: ${response.statusCode}");
+        return null;
       }
     } on DioException catch (e) {
-      throw Exception("Erro de rede: ${e.message}");
+      print("[USER_SERVICE_DEBUG] Network error fetching user: ${e.message}");
+      return null;
     } catch (e) {
-      throw Exception("Erro inesperado: $e");
+      print("[USER_SERVICE_DEBUG] Unexpected error fetching user: $e");
+      return null;
     }
   }
 
@@ -82,10 +96,7 @@ class UserService {
     try {
       final response = await _dio.put(
         '$_endpoint/me',
-        data: {
-          'name': name,
-          'email': email,
-        },
+        data: {'name': name, 'email': email},
       );
 
       if (response.statusCode == 200) {

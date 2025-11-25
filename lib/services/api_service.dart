@@ -23,7 +23,8 @@ class ApiService {
   final SecureStorageService _storageService = SecureStorageService();
 
   // URL base da sua API
-  static const String _baseUrl = "https://event-hub-api-bjjd.onrender.com/eventHub/";
+  static const String _baseUrl =
+      "https://event-hub-api-bjjd.onrender.com/eventHub/";
 
   ApiService._internal() {
     // Configuração base do Dio
@@ -43,22 +44,36 @@ class ApiService {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          print("[API_DEBUG] Request: ${options.method} ${options.path}");
+          print("[API_DEBUG] Headers: ${options.headers}");
+          if (options.data != null) {
+            // ATENÇÃO: Logar dados sensíveis (senhas, etc.) em produção é uma má prática.
+            // Este log é apenas para depuração local.
+            print("[API_DEBUG] Data: ${options.data}");
+          }
+
           // 1. Pega o token do storage
           final token = await _storageService.getToken();
 
           // 2. Adiciona o token ao Header, se existir
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
+            print("[API_DEBUG] Token added to headers.");
           }
 
           // 3. Continua a requisição
           return handler.next(options);
         },
         onResponse: (response, handler) {
+          print("[API_DEBUG] Response: ${response.statusCode} ${response.requestOptions.path}");
+          print("[API_DEBUG] Response Data: ${response.data}"); // Pode conter dados sensíveis
           // Pode inspecionar respostas aqui, se necessário
           return handler.next(response);
         },
         onError: (DioException e, handler) async {
+          print("[API_DEBUG] Error: ${e.response?.statusCode} ${e.requestOptions.path}");
+          print("[API_DEBUG] Error Message: ${e.message}");
+          print("[API_DEBUG] Error Response Data: ${e.response?.data}");
           /* * Aqui você pode tratar erros globalmente.
            * Ex: Se for um erro 401 (Não Autorizado),
            * talvez o token expirou. Você pode tentar
@@ -68,7 +83,7 @@ class ApiService {
             // Ex: Deslogar o usuário
             await _storageService.deleteToken();
             // TODO: Navegar para a tela de Login
-            // print("Token inválido ou expirado. Usuário deslogado.");
+            print("Token inválido ou expirado. Usuário deslogado.");
           }
           return handler.next(e);
         },
