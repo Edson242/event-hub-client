@@ -18,7 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -37,11 +38,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   /// 🔹 Lógica principal de cadastro
   Future<void> _handleSignUp() async {
-    if (_isLoading) return;
+    print("[SIGNUP_DEBUG] _handleSignUp() called.");
+    if (_isLoading) {
+      print("[SIGNUP_DEBUG] Already loading, returning.");
+      return;
+    }
 
     if (_formKey.currentState!.validate()) {
+      print("[SIGNUP_DEBUG] Form is valid.");
       if (_passwordController.text != _confirmPasswordController.text) {
-        showSnackBar(context: context, message: "As senhas não coincidem!", duration: 3);
+        print("[SIGNUP_DEBUG] Passwords do not match.");
+        showSnackBar(
+          context: context,
+          message: "As senhas não coincidem!",
+          duration: 3,
+        );
         return;
       }
 
@@ -51,12 +62,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
+      print("[SIGNUP_DEBUG] Attempting to register user:");
+      print("[SIGNUP_DEBUG]   Name: $name");
+      print("[SIGNUP_DEBUG]   Email: $email");
+      // ATENÇÃO: Logar senhas em produção é uma má prática de segurança.
+      print("[SIGNUP_DEBUG]   Password length: ${password.length}");
+
       try {
+        print("[SIGNUP_DEBUG] Calling UserService.registerUser...");
         final String? error = await userService.registerUser(
           email: email,
           password: password,
           name: name,
           role: RoleType.user,
+        );
+        print(
+          "[SIGNUP_DEBUG] UserService.registerUser returned: ${error ?? 'No error (success)'}",
         );
 
         if (mounted) {
@@ -75,11 +96,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
             );
           }
         }
-      } catch (e) {
+      } catch (e, stackTrace) {
+        print("[SIGNUP_DEBUG] Exception caught in _handleSignUp: $e");
+        print("[SIGNUP_DEBUG] Stack trace: $stackTrace");
         if (mounted) {
-          showSnackBar(context: context, message: "Erro inesperado. Tente novamente.", duration: 3);
+          showSnackBar(
+            context: context,
+            message: "Erro inesperado. Tente novamente.",
+            duration: 3,
+          );
         }
       } finally {
+        print(
+          "[SIGNUP_DEBUG] _handleSignUp finally block. Setting _isLoading to false.",
+        );
         if (mounted) setState(() => _isLoading = false);
       }
     }
@@ -93,14 +123,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: AppColors.lightBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textBlack01Color),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.textBlack01Color,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
             child: Form(
               key: _formKey,
               child: Column(
@@ -109,7 +145,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text(
                     "Criar Conta",
                     style: TextStyle(
-                      fontSize: 32.0,
+                      fontSize: 24.0,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textBlack01Color,
                     ),
@@ -162,8 +198,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       icon: Icons.lock_outline,
                       isPassword: true,
                       obscureState: _obscurePassword,
-                      onToggleVisibility: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onToggleVisibility:
+                          () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                     ),
                     validator: (value) {
                       if (value == null || value.length < 6) {
@@ -184,8 +222,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       icon: Icons.lock_outline,
                       isPassword: true,
                       obscureState: _obscureConfirmPassword,
-                      onToggleVisibility: () => setState(
-                          () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                      onToggleVisibility:
+                          () => setState(
+                            () =>
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword,
+                          ),
                     ),
                     validator: (value) {
                       if (value != _passwordController.text) {
@@ -202,7 +244,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: const LinearGradient(
-                        colors: [AppColors.mainColorBlue, AppColors.mainColorCyan],
+                        colors: [
+                          AppColors.mainColorBlue,
+                          AppColors.mainColorCyan,
+                        ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
@@ -216,29 +261,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: _isLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                "CADASTRAR",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: AppColors.backgroundWhiteColor,
-                                    fontWeight: FontWeight.bold,
+                      child:
+                          _isLoading
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
+                              : Row(
+                                children: [
+                                  const Spacer(),
+                                  const Text(
+                                    "CADASTRAR",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.arrow_forward_outlined,
-                                  color: AppColors.backgroundWhiteColor,
-                                ),
-                              ],
-                            ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
                     ),
                   ),
                   const SizedBox(height: 24.0),
@@ -255,7 +310,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
                           );
                         },
                         child: const Text(
@@ -311,17 +368,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.accentRedColor, width: 2),
       ),
-      suffixIcon: isPassword
-          ? IconButton(
-              icon: Icon(
-                obscureState
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                color: AppColors.textBlack03Color,
-              ),
-              onPressed: onToggleVisibility,
-            )
-          : null,
+      suffixIcon:
+          isPassword
+              ? IconButton(
+                icon: Icon(
+                  obscureState
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: AppColors.textBlack03Color,
+                ),
+                onPressed: onToggleVisibility,
+              )
+              : null,
     );
   }
 }

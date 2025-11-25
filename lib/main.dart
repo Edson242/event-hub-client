@@ -4,11 +4,12 @@ import 'package:myapp/ui/home/home_screen.dart';
 import 'package:myapp/ui/_core/app_theme.dart';
 import 'package:myapp/ui/splash/splash_screen.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MyApp(),
-  );
+  await initializeDateFormatting('pt_BR', null);
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -35,7 +36,7 @@ class RouterScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SplashScreen(); // Ou um loading indicator
         }
-        
+
         if (snapshot.hasData && snapshot.data != null) {
           return HomeScreen();
         } else {

@@ -10,7 +10,16 @@ class UserpageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerMenu(),
-      appBar: getAppBar(context: context, title: 'Minha Conta'),
+      appBar: getAppBar(
+        context: context,
+        title: 'Minha Conta',
+        onProfileTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const UserpageScreen()),
+          );
+        },
+      ),
       body: Center(child: Text('This is the User Page')),
       bottomNavigationBar: const BottomMenu(initialIndex: 1),
     );

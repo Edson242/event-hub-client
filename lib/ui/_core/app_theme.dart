@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:myapp/ui/_core/app_colors.dart';
 
 abstract class AppTheme {
-  static ThemeData appTheme = ThemeData.dark().copyWith(
+  static ThemeData appTheme = ThemeData.light().copyWith(
+    scaffoldBackgroundColor: AppColors.lightBackgroundColor, // Fundo branco padrão
     useMaterial3: true,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(

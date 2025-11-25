@@ -6,9 +6,10 @@ showSnackBar({
   int? duration,
   bool isError = true,
 }) {
-  ScaffoldMessenger.of(context).showSnackBar(
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.showSnackBar(
     SnackBar(
-      content: Text(message, style: TextStyle(color: Colors.white)),
+      content: Text(message, style: const TextStyle(color: Colors.white)),
       duration: Duration(seconds: duration ?? 2),
       behavior: SnackBarBehavior.floating,
       backgroundColor: (isError) ? Colors.red : Colors.green,
@@ -16,7 +17,7 @@ showSnackBar({
       action: SnackBarAction(
         label: "Ok",
         onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          messenger.hideCurrentSnackBar();
         },
         textColor: Colors.white,
       ),
